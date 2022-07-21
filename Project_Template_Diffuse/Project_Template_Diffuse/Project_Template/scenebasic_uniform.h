@@ -8,6 +8,8 @@
 
 #include "helper/torus.h"
 #include "helper/teapot.h"
+#include "helper/plane.h"
+#include "helper/objmesh.h"
 #include <glm/glm.hpp>
 
 class SceneBasic_Uniform : public Scene
@@ -15,13 +17,19 @@ class SceneBasic_Uniform : public Scene
 private:
     GLSLProgram prog;
     
-    Torus torus;
-    //Teapot teapot;
+    //Torus torus;
+    Plane plane;
+    std::unique_ptr<ObjMesh> mesh;
+    Teapot teapot;
+
+    float tPrev, lightAngle, lightRotationSpeed;
+    glm::vec4 lightPos;
 
     void setMatrices();
-
     void compile();
-
+    void drawScene();
+    void drawFloor();
+    void drawSpot(const glm::vec3& pos, float rough, int metal, const glm::vec3 & color);
 public:
     SceneBasic_Uniform();
 

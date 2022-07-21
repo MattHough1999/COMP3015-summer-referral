@@ -1,10 +1,7 @@
-﻿  glad.c
-  glslprogram.cpp
-  glutils.cpp
-  teapot.cpp
-  torus.cpp
-  trianglemesh.cpp
-  main.cpp
-  scenebasic_uniform.cpp
-  Generating Code...
+﻿  scenebasic_uniform.cpp
+C:\Users\Matt\Documents\GitHub\COMP3015-summer-referral\Project_Template_Diffuse\Project_Template_Diffuse\Project_Template\scenebasic_uniform.cpp(126,52): warning C4305: 'argument': truncation from 'double' to 'T'
+          with
+          [
+              T=float
+          ]
   Project_Template.vcxproj -> C:\Users\Matt\Documents\GitHub\COMP3015-summer-referral\Project_Template_Diffuse\Project_Template_Diffuse\Project_Template\x64\Debug\Project_Template.exe
