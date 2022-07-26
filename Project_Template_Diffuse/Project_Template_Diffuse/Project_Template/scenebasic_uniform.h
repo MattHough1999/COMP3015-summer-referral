@@ -30,6 +30,7 @@ private:
     void drawScene();
     void drawFloor();
     void drawSpot(const glm::vec3& pos, float rough, int metal, const glm::vec3 & color);
+    void drawTeapot(const glm::vec3& pos, float rough, int metal, const glm::vec3& color,int rot);
 public:
     SceneBasic_Uniform();
 

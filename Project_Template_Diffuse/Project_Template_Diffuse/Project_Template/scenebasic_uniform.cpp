@@ -57,7 +57,7 @@ void SceneBasic_Uniform::update( float t )
 {
 	//update your angle here
     float deltaT = t - tPrev;
-    if (tPrev == 0.0f) deltaT = 0.0f;
+    if (tPrev == 0.0f) { deltaT = 0.0f; }
 
     tPrev = t;
 
@@ -102,8 +102,8 @@ void SceneBasic_Uniform::drawScene()
 {
     drawFloor();
     int numCows = 9;
-    glm::vec3 cowBaseColor(0.1f, 0.33f, 0.97);
-    for(int i = 0;i<numCows;i++)
+    glm::vec3 cowBaseColor(0.1f, 0.33f, 0.97f);
+   for(int i = 0; i < numCows; i++)
     {
         float cowX = i * (10.0f / (numCows - 1)) - 5.0f;
         float rough = (i + 1) * (1.0f / numCows);
@@ -114,8 +114,8 @@ void SceneBasic_Uniform::drawScene()
 
     drawSpot(glm::vec3(-3.0f, 0.0f, 3.0f), metalRough, 1, glm::vec3(1, 0.71f, 0.29f));
     drawSpot(glm::vec3(-1.5f, 0.0f, 3.0f), metalRough, 1, glm::vec3(0.95f, 0.64f, 0.64f));
-    drawSpot(glm::vec3(-0.0f, 0.0f, 3.0f), metalRough, 1, glm::vec3(0.91, 0.92f, 0.92f));
-    drawSpot(glm::vec3(1.5f, 0.0f, 3.0f), metalRough, 1, glm::vec3(0.542, 0.497f, 0.449f));
+    drawSpot(glm::vec3(-0.0f, 0.0f, 3.0f), metalRough, 1, glm::vec3(0.91f, 0.92f, 0.92f));
+    drawSpot(glm::vec3(1.5f, 0.0f, 3.0f), metalRough, 1, glm::vec3(0.542f, 0.497f, 0.449f));
     drawSpot(glm::vec3(3.0f, 0.0f, 3.0f), metalRough, 1, glm::vec3(0.95f, 0.93f, 0.88f));
 }
 void SceneBasic_Uniform::drawFloor() 
@@ -123,18 +123,18 @@ void SceneBasic_Uniform::drawFloor()
     model = glm::mat4(1.0f);
     prog.setUniform("Material.Rough", 0.9f);
     prog.setUniform("Material.Metal", 0);
-    prog.setUniform("Material.Color", glm::vec3(0.2));
-    model = glm::translate(model, glm::vec3(0.0f, -0.75, 0.0f));
+    prog.setUniform("Material.Color", glm::vec3(0.2f));
+    model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0f));
     setMatrices();
     plane.render();
 }
 void SceneBasic_Uniform::drawSpot(const glm::vec3&pos, float rough, int metal, const glm::vec3&color)
 {
-    model = glm::mat4(1.0);
+    model = glm::mat4(1.0f);
     prog.setUniform("Material.Rough", rough);
     prog.setUniform("Material.Metal", metal);
     prog.setUniform("Material.Color", color);
-    model = glm::translate(model, glm::vec3(0.0f, -0.75, 0.0f));
+    model = glm::translate(model, pos);
     model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
     setMatrices();
