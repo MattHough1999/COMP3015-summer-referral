@@ -107,16 +107,16 @@ void SceneBasic_Uniform::drawScene()
     {
         float cowX = i * (10.0f / (numCows - 1)) - 5.0f;
         float rough = (i + 1) * (1.0f / numCows);
-        drawSpot(glm::vec3(cowX, 0, 0), rough, 0, cowBaseColor);
+        drawSpot(glm::vec3(cowX, 0, -6), rough, 0, cowBaseColor);
     }
 
     float metalRough = 0.43f;
 
-    drawSpot(glm::vec3(-3.0f, 0.0f, 3.0f), metalRough, 1, glm::vec3(1, 0.71f, 0.29f));
-    drawSpot(glm::vec3(-1.5f, 0.0f, 3.0f), metalRough, 1, glm::vec3(0.95f, 0.64f, 0.64f));
-    drawSpot(glm::vec3(-0.0f, 0.0f, 3.0f), metalRough, 1, glm::vec3(0.91f, 0.92f, 0.92f));
-    drawSpot(glm::vec3(1.5f, 0.0f, 3.0f), metalRough, 1, glm::vec3(0.542f, 0.497f, 0.449f));
-    drawSpot(glm::vec3(3.0f, 0.0f, 3.0f), metalRough, 1, glm::vec3(0.95f, 0.93f, 0.88f));
+    drawSpot(glm::vec3(-3.0f, 0.0f, -3.0f), metalRough, 1, glm::vec3(1, 0.71f, 0.29f));
+    drawSpot(glm::vec3(-1.5f, 0.0f, -3.0f), metalRough, 1, glm::vec3(0.95f, 0.64f, 0.64f));
+    drawSpot(glm::vec3(-0.0f, 0.0f, -3.0f), metalRough, 1, glm::vec3(0.91f, 0.92f, 0.92f));
+    drawSpot(glm::vec3(1.5f, 0.0f, -3.0f), metalRough, 1, glm::vec3(0.542f, 0.497f, 0.449f));
+    drawSpot(glm::vec3(3.0f, 0.0f, -3.0f), metalRough, 1, glm::vec3(0.95f, 0.93f, 0.88f));
 }
 void SceneBasic_Uniform::drawFloor() 
 {

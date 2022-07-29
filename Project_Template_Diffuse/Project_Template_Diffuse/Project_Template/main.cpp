@@ -6,7 +6,7 @@
 
 int main(int argc, char* argv[])
 {
-	SceneRunner runner("Shader_Basics");
+	SceneRunner runner("PBR Shader Demo");
 
 	std::unique_ptr<Scene> scene;
 
