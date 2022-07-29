@@ -5,64 +5,22 @@ using std::cerr;
 using std::endl;
 
 #include <glm/gtc/matrix_transform.hpp>
-#include "helper/noisetex.h"
 using glm::vec3;
 using glm::mat4;
 
 //constructor for torus
-SceneBasic_Uniform::SceneBasic_Uniform()  {} /*: /*plane(20,20,1,1) ,teapot(5, glm::mat4(1.0f)),tPrev(0.0f),lightPos(5.0f,5.0f,5.0f,1.0f)
+SceneBasic_Uniform::SceneBasic_Uniform() : plane(20,20,1,1) ,teapot(5, glm::mat4(1.0f)),tPrev(0.0f),lightPos(5.0f,5.0f,5.0f,1.0f)
 {
     mesh = ObjMesh::load("../Project_Template/media/spot.obj");
 }
-*/
 
 void SceneBasic_Uniform::initScene()
 {
     compile();
-    glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+    glClearColor(0.1f, 0.1f, 0.2f, 0.1f);
 	glEnable(GL_DEPTH_TEST);
-    projection = mat4(1.0f);
-   
-    GLfloat verts[] = {
-        -1.0f,-1.0f,0.0f,1.0f,-1.0f,0.0f,1.0f,1.0f,0.0f,
-        -1.0f,-1.0f,0.0f,1.0f,1.0f,0.0f,-1.0f,1.0f,0.0f
-    };
-    GLfloat tc[]{
-        0.0f,0.0f,1.0f,0.0f,1.0f,1.0f,
-        0.0f,0.0f,1.0f,1.0f,0.0f,1.0f
-    };
-
-    unsigned int handle[2];
-    glGenBuffers(2, handle);
-
-    glBindBuffer(GL_ARRAY_BUFFER, handle[0]);
-    glBufferData(GL_ARRAY_BUFFER, 6 * 3 * sizeof(float), verts, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ARRAY_BUFFER, handle[1]);
-    glBufferData(GL_ARRAY_BUFFER, 6 * 2 * sizeof(float), tc, GL_STATIC_DRAW);
-
-    glGenVertexArrays(1, &quad);
-    glBindVertexArray(quad);
-
-    glBindBuffer(GL_ARRAY_BUFFER, handle[0]);
-    glVertexAttribPointer((GLuint)0, 3, GL_FLOAT, GL_FALSE, 0, ((GLubyte*)NULL + (0)));
-    glEnableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, handle[1]);
-    glVertexAttribPointer((GLuint)2, 2, GL_FLOAT, GL_FALSE, 0, ((GLubyte*)NULL + (0)));
-    glEnableVertexAttribArray(2);
-
-    glBindVertexArray(0);
-
-    prog.setUniform("NoiseTex", 0);
-    
-
-    GLuint noiseTex = NoiseTex::generate2DTex(6.0f);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, noiseTex);
    
 
-    /*
     view = glm::lookAt(
         glm::vec3(0.0f,4.0f,7.0f),
         glm::vec3(0.0f,0.0f,0.0f),
@@ -78,15 +36,15 @@ void SceneBasic_Uniform::initScene()
     prog.setUniform("Light[1].Position", glm::vec4(0,0.15f,-1.0f,0));
     prog.setUniform("Light[2].L", glm::vec3(45.0f));
     prog.setUniform("Light[2].Position", view * glm::vec4(-7,3,7,1));
-    */
+
 
 }
 
 void SceneBasic_Uniform::compile()
 {
 	try {
-		prog.compileShader("shader/Noise.vert");
-		prog.compileShader("shader/Noise.frag");
+		prog.compileShader("shader/PBR.vert");
+		prog.compileShader("shader/PBR.frag");
 		prog.link();
 		prog.use();
 	} catch (GLSLProgramException &e) {
@@ -97,7 +55,6 @@ void SceneBasic_Uniform::compile()
 
 void SceneBasic_Uniform::update( float t )
 {
-    /*
 	//update your angle here
     float deltaT = t - tPrev;
     if (tPrev == 0.0f) { deltaT = 0.0f; }
@@ -111,23 +68,19 @@ void SceneBasic_Uniform::update( float t )
         lightPos.y = 3.0f;
         lightPos.z = glm::sin(lightAngle) * 7.0f;
     }
-    */
 }
 
 void SceneBasic_Uniform::render()
 {
-    view = mat4(1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //prog.setUniform("Light[0].Position", view * lightPos);
+    prog.setUniform("Light[0].Position", view * lightPos);
     drawScene();
-    glFinish();
     //teapot.render();  
 }
 
 void SceneBasic_Uniform::setMatrices()
 {
-    /*
     glm::mat4 mv = view * model; //we create a model view matrix
     
     prog.setUniform("ModelViewMatrix", mv); //set the uniform for the model view matrix
@@ -135,9 +88,6 @@ void SceneBasic_Uniform::setMatrices()
     prog.setUniform("NormalMatrix", glm::mat3(mv)); //we set the uniform for normal matrix
     
     prog.setUniform("MVP", projection * mv); //we set the model view matrix by multiplying the mv with the projection matrix
-    */
-    mat4 mv = view * model;
-    prog.setUniform("MVP", projection * mv);
 }
 
 void SceneBasic_Uniform::resize(int w, int h)
@@ -150,13 +100,6 @@ void SceneBasic_Uniform::resize(int w, int h)
 
 void SceneBasic_Uniform::drawScene()
 {
-    model = mat4(1.0f);
-    setMatrices();
-
-    glBindVertexArray(quad);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-}
-    /*
     drawFloor();
     int numCows = 9;
     glm::vec3 cowBaseColor(0.1f, 0.33f, 0.97f);
@@ -174,7 +117,6 @@ void SceneBasic_Uniform::drawScene()
     drawSpot(glm::vec3(-0.0f, 0.0f, 3.0f), metalRough, 1, glm::vec3(0.91f, 0.92f, 0.92f));
     drawSpot(glm::vec3(1.5f, 0.0f, 3.0f), metalRough, 1, glm::vec3(0.542f, 0.497f, 0.449f));
     drawSpot(glm::vec3(3.0f, 0.0f, 3.0f), metalRough, 1, glm::vec3(0.95f, 0.93f, 0.88f));
-    
 }
 void SceneBasic_Uniform::drawFloor() 
 {
@@ -198,4 +140,3 @@ void SceneBasic_Uniform::drawSpot(const glm::vec3&pos, float rough, int metal, c
     setMatrices();
     mesh->render();
 }
-*/

@@ -168,8 +168,6 @@
   <ItemGroup>
     <None Include="shader\basic_uniform.frag" />
     <None Include="shader\basic_uniform.vert" />
-    <None Include="shader\Noise.frag" />
-    <None Include="shader\Noise.vert" />
     <None Include="shader\PBR.frag" />
     <None Include="shader\PBR.vert" />
   </ItemGroup>

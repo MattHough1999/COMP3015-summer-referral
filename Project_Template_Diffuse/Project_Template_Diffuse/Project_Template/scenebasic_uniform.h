@@ -17,16 +17,7 @@ class SceneBasic_Uniform : public Scene
 private:
     GLSLProgram prog;
     
-    GLuint quad;
-
-    glm::vec3 lightPos;
-    float angle;
-
-    void setMatrices();
-    void compile();
-    void drawScene();
-    //Code for PBR shader
-    /*
+    //Torus torus;
     Plane plane;
     std::unique_ptr<ObjMesh> mesh;
     Teapot teapot;
@@ -40,7 +31,6 @@ private:
     void drawFloor();
     void drawSpot(const glm::vec3& pos, float rough, int metal, const glm::vec3 & color);
     void drawTeapot(const glm::vec3& pos, float rough, int metal, const glm::vec3& color,int rot);
-    */
 public:
     SceneBasic_Uniform();
 
