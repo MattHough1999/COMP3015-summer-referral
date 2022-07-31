@@ -11,6 +11,7 @@
 #include "helper/plane.h"
 #include "helper/objmesh.h"
 #include <glm/glm.hpp>
+#include "GLFW/glfw3.h"
 
 class SceneBasic_Uniform : public Scene
 {
@@ -32,7 +33,7 @@ private:
     void drawSpot(const glm::vec3& pos, float rough, int metal, const glm::vec3 & color);
     void drawTeapot(const glm::vec3& pos, float rough, int metal, const glm::vec3& color,int rot);
 public:
-    SceneBasic_Uniform();
+    SceneBasic_Uniform(GLFWwindow* sceneRunnerWindow);
 
     void initScene();
     void update( float t );

@@ -13,11 +13,12 @@
 
 class SceneRunner {
 private:
-    GLFWwindow * window;
+    //GLFWwindow * window;
     int fbw, fbh;
 	bool debug;           // Set true to enable debug messages
 
 public:
+    GLFWwindow* window;
     SceneRunner(const std::string & windowTitle, int width = WIN_WIDTH, int height = WIN_HEIGHT, int samples = 0) : debug(true) {
         // Initialize GLFW
         if( !glfwInit() ) exit( EXIT_FAILURE );

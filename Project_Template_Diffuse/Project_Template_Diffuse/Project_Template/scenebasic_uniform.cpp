@@ -5,13 +5,17 @@ using std::cerr;
 using std::endl;
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <GLFW/glfw3.h>
 using glm::vec3;
 using glm::mat4;
 
+GLFWwindow* window;
 //constructor for torus
-SceneBasic_Uniform::SceneBasic_Uniform() : plane(20,20,1,1) ,teapot(5, glm::mat4(1.0f)),tPrev(0.0f),lightPos(5.0f,5.0f,5.0f,1.0f)
+SceneBasic_Uniform::SceneBasic_Uniform(GLFWwindow* sceneRunnerWindow) : plane(20,20,1,1) ,teapot(5, glm::mat4(1.0f)),tPrev(0.0f),lightPos(5.0f,5.0f,5.0f,1.0f)
 {
     mesh = ObjMesh::load("../Project_Template/media/spot.obj");
+
+    window = sceneRunnerWindow;
 }
 
 void SceneBasic_Uniform::initScene()
