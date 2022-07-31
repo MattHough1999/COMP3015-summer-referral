@@ -38,6 +38,7 @@ public:
     void initScene();
     void update( float t );
     void render();
+    void renderUserInterface();
     void resize(int, int);
 };
 

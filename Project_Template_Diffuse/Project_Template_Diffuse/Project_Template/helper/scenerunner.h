@@ -13,7 +13,7 @@
 
 class SceneRunner {
 private:
-    //GLFWwindow * window;
+    
     int fbw, fbh;
 	bool debug;           // Set true to enable debug messages
 

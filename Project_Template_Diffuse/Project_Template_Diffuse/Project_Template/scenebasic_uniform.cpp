@@ -6,6 +6,9 @@ using std::endl;
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <GLFW/glfw3.h>
+#include "ImGUI/imgui.h"
+#include "ImGUI/imgui_impl_glfw.h"
+#include "ImGUI/imgui_impl_opengl3.h"
 using glm::vec3;
 using glm::mat4;
 
@@ -41,7 +44,17 @@ void SceneBasic_Uniform::initScene()
     prog.setUniform("Light[2].L", glm::vec3(45.0f));
     prog.setUniform("Light[2].Position", view * glm::vec4(-7,3,7,1));
 
+    //IMGUI
 
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+
+    ImGui::StyleColorsDark();
+
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init();
 }
 
 void SceneBasic_Uniform::compile()
@@ -80,7 +93,27 @@ void SceneBasic_Uniform::render()
 
     prog.setUniform("Light[0].Position", view * lightPos);
     drawScene();
+    renderUserInterface();
     //teapot.render();  
+}
+
+void SceneBasic_Uniform::renderUserInterface()
+{
+
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+    ImGui::Begin("Customisation Menu");
+
+    ImGui::Text("This is some text");
+
+    ImGui::End();
+
+
+    ImGui::Render();
+    int display_w, display_h;
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 }
 
 void SceneBasic_Uniform::setMatrices()
