@@ -21,9 +21,13 @@ SceneBasic_Uniform::SceneBasic_Uniform(GLFWwindow* sceneRunnerWindow) : plane(20
     window = sceneRunnerWindow;
 }
 
+float Roughnes, speed, Color[3], LightPos[3], objPos[3], objScale[3] = { 1.0f,1.0f,1.0f }, LightIntensity[3] = {45.0f,45.0f,45.0f };
+bool wireframe,metalic = false;
+
 void SceneBasic_Uniform::initScene()
 {
-    compile();
+    
+   compile();
     glClearColor(0.1f, 0.1f, 0.2f, 0.1f);
 	glEnable(GL_DEPTH_TEST);
    
@@ -81,9 +85,9 @@ void SceneBasic_Uniform::update( float t )
     if(animating())
     {
         lightAngle = glm::mod(lightAngle + deltaT * lightRotationSpeed, glm::two_pi<float>());
-        lightPos.x = glm::cos(lightAngle) * 7.0f;
-        lightPos.y = 3.0f;
-        lightPos.z = glm::sin(lightAngle) * 7.0f;
+        lightPos.x = (glm::cos(lightAngle) * 7.0f) + LightPos[0];
+        lightPos.y = 3.0f + LightPos[1];
+        lightPos.z = (glm::sin(lightAngle) * 7.0f) + LightPos[2];
     }
 }
 
@@ -92,6 +96,7 @@ void SceneBasic_Uniform::render()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     prog.setUniform("Light[0].Position", view * lightPos);
+    prog.setUniform("Light[0].L", glm::vec3(LightIntensity[0], LightIntensity[1], LightIntensity[2]));
     drawScene();
     renderUserInterface();
     //teapot.render();  
@@ -103,9 +108,36 @@ void SceneBasic_Uniform::renderUserInterface()
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
-    ImGui::Begin("Customisation Menu");
+
+    //Shader options
+    ImGui::Begin("Shader Menu"); 
 
     ImGui::Text("This is some text");
+    ImGui::SliderFloat("Roughness", &Roughnes, 0.0f, 1.0f);
+    ImGui::ColorEdit3("Color", Color);
+    ImGui::Checkbox("Metalic", &metalic);
+
+    ImGui::End();
+
+    //Light options
+    ImGui::Begin("Lights Menu");
+
+    ImGui::Text("This is some more text");
+    ImGui::SliderFloat("Rotation Speed", &lightRotationSpeed, 0.0f, 5.0f);
+    ImGui::SliderFloat3("Intensity (Colour)", LightIntensity, 0, 100);
+    ImGui::SliderFloat3("Position", LightPos, -10.00f, 10.00f);
+        
+
+    ImGui::End();
+
+    //Object Menu
+    ImGui::Begin("Object Menu");
+
+    ImGui::Text("This is even more text");
+    ImGui::SliderFloat3("Position", objPos, -4.00f, 4.00f);
+    ImGui::SliderFloat3("Scale", objScale, 0.00f, 3.00f);
+    ImGui::Checkbox("Wireframe", &wireframe);
+    
 
     ImGui::End();
 
