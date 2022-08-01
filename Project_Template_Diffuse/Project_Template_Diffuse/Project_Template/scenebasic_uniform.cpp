@@ -30,10 +30,11 @@ SceneBasic_Uniform::SceneBasic_Uniform(GLFWwindow* sceneRunnerWindow) : plane(20
 
 
 //variables used for ImGUI interactions;
-float Roughnes, speed, Color[3], LightPos[3], objPos[3],objRot[3], objScale[3] = { 1.0f,1.0f,1.0f }, LightIntensity[3] = {45.0f,45.0f,45.0f };
+float Roughnes = 0.1f, speed, Color[3], LightPos[3], objPos[3],objRot[3], objScale[4] = { 1.0f,1.0f,1.0f ,1.0f}, LightIntensity[3] = {45.0f,45.0f,45.0f };
 bool wireframe,metalic = false;
 int objIndex = 0;
-const char* objects[5] = {"Spot","Goblet","Spot","Spot","Spot"};
+const char* objects[5] = {"Spot","Goblet","Spot","Spot","Custom"};
+
 
 void SceneBasic_Uniform::initScene()
 {
@@ -51,6 +52,7 @@ void SceneBasic_Uniform::initScene()
     projection = glm::perspective(glm::radians(50.f), (float)width / height, 0.5f, 100.0f);
     lightAngle = 0.0f;
     lightRotationSpeed = 1.5f;
+    
 
     prog.setUniform("Light[0].L", glm::vec3(45.0f));
     prog.setUniform("Light[0].Position", view * lightPos);
@@ -112,9 +114,10 @@ void SceneBasic_Uniform::render()
     renderUserInterface();
     //teapot.render();  
 }
-
+bool showErr = false;
 void SceneBasic_Uniform::renderUserInterface()
 {
+    //bool showErr = false;
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
@@ -124,6 +127,7 @@ void SceneBasic_Uniform::renderUserInterface()
     ImGui::Begin("Shader Menu"); 
 
     ImGui::Text("This is some text");
+    
     ImGui::SliderFloat("Roughness", &Roughnes, 0.0f, 1.0f);
     ImGui::ColorEdit3("Color", Color);
     ImGui::Checkbox("Metalic", &metalic);
@@ -143,11 +147,65 @@ void SceneBasic_Uniform::renderUserInterface()
 
     //Object Menu
     ImGui::Begin("Object Menu");
+    ImGui::Text("To load a custom model enter its filename!");
+    ImGui::InputText("Your filename",tryFileName,64, ImGuiInputTextFlags_CharsNoBlank);
+    if(ImGui::Button("Get File"))
+    {
+        if(tryFileText())
+        {
+            showErr = false;
+        }
+        else
+        {
+            showErr = true;
+        }
+    }
+    if(showErr)
+    {
+        ImGui::Text("Error Loading File, Try again");
+    }
 
     ImGui::Text("This is even more text");
-    ImGui::SliderFloat3("Position", objPos, -4.00f, 4.00f);
-    ImGui::SliderFloat3("Scale", objScale, 0.00f, 3.00f);
+    
+    
+    ImGui::SliderFloat("X Pos", &objPos[0],-4.0f,4.0f);
+    ImGui::SliderFloat("Y Pos", &objPos[1], -4.0f, 4.0f);
+    ImGui::SliderFloat("Z Pos", &objPos[2], -4.0f, 4.0f); ImGui::SameLine();
+    if (ImGui::Button("Reset Pos")) {
+        objPos[0] = 0;
+        objPos[1] = 0;
+        objPos[2] = 0;
+    }
+   
+    ImGui::NewLine();
+    
+    ImGui::SliderFloat("X Scale", &objScale[0], 0.00f, 3.00f);
+    ImGui::SliderFloat("Y Scale", &objScale[1], 0.00f, 3.00f);
+    ImGui::SliderFloat("Z Scale", &objScale[2], 0.00f, 3.00f);
+    ImGui::SliderFloat("W Scale", &objScale[3], 0.00f, 3.00f);
+    ImGui::SameLine();
+    if (ImGui::Button("Reset Scale")) {
+        objScale[0] = 1;
+        objScale[1] = 1;
+        objScale[2] = 1;
+        objScale[3] = 1;
+    }
+
+    ImGui::NewLine();
+    
     ImGui::SliderFloat3("Roation",objRot,-180.0f,180.0f);
+    ImGui::SliderFloat("X Rot", &objRot[0], -180.0f, 180.0f);
+    ImGui::SliderFloat("Y Rot", &objRot[1], -180.0f, 180.0f);
+    ImGui::SliderFloat("Z Rot", &objRot[2], -180.0f, 180.0f);
+    ImGui::SameLine();
+    if (ImGui::Button("Reset Rot")) {
+        objRot[0] = 0;
+        objRot[1] = 0;
+        objRot[2] = 0;
+
+    }
+
+
     ImGui::Checkbox("Wireframe", &wireframe);
     ImGui::Combo("Object loaded", &objIndex, objects, IM_ARRAYSIZE(objects));
     
@@ -231,7 +289,7 @@ void SceneBasic_Uniform::drawCustom(const glm::vec3& pos, float rough, int metal
     prog.setUniform("Material.Metal", metal);
     prog.setUniform("Material.Color", color);
     model = glm::translate(model, pos);
-    model = glm::scale(model, glm::vec3(objScale[0], objScale[1], objScale[2]));
+    model = glm::scale(model, glm::vec3(objScale[0] * objScale[3], objScale[1] * objScale[3], objScale[2] * objScale[3]));
     model = glm::rotate(model, glm::radians(rotation[0]), vec3(1.0f, 0.0f, 0.0f));
     model = glm::rotate(model, glm::radians(rotation[1]), vec3(0.0f, 1.0f, 0.0f));
     model = glm::rotate(model, glm::radians(rotation[2]), vec3(0.0f, 0.0f, 1.0f));
@@ -258,4 +316,28 @@ void SceneBasic_Uniform::drawCustom(const glm::vec3& pos, float rough, int metal
     default:
         break;
     }
+}
+bool SceneBasic_Uniform::tryFileText()
+{
+    std::string temp(tryFileName);
+    std::string fileName = "../Project_Template/media/" + temp;
+    FILE* file;
+    errno_t err;
+    err = fopen_s(&file, fileName.c_str(), "r");
+    if (err == 0) 
+    {
+        object4 = ObjMesh::load(fileName.c_str(), true); return true;
+    }
+    else 
+    {
+        fileName = fileName + ".obj";
+        err = fopen_s(&file, fileName.c_str(), "r");
+        if(err == 0){ object4 = ObjMesh::load(fileName.c_str(), true); return true; }
+        object4 = ObjMesh::load("../Project_Template/media/spot.obj");
+        return false;
+    }
+    
+    
+    return true;
+    
 }

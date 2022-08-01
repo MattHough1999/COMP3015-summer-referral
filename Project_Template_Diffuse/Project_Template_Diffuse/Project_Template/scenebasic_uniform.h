@@ -30,6 +30,7 @@ private:
 
     float tPrev, lightAngle, lightRotationSpeed;
     glm::vec4 lightPos;
+    char tryFileName[64];
 
     void setMatrices();
     void compile();
@@ -37,6 +38,7 @@ private:
     void drawFloor();
     void drawSpot(const glm::vec3& pos, float rough, int metal, const glm::vec3 & color);
     void drawCustom(const glm::vec3& pos, float rough, int metal,int index, const glm::vec3& color,const glm::vec3 &rotation);
+    bool tryFileText();
 public:
     SceneBasic_Uniform(GLFWwindow* sceneRunnerWindow);
 
