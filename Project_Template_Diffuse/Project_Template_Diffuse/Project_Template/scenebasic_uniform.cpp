@@ -9,6 +9,8 @@ using std::endl;
 #include "ImGUI/imgui.h"
 #include "ImGUI/imgui_impl_glfw.h"
 #include "ImGUI/imgui_impl_opengl3.h"
+
+#include <string>
 using glm::vec3;
 using glm::mat4;
 
@@ -17,12 +19,21 @@ GLFWwindow* window;
 SceneBasic_Uniform::SceneBasic_Uniform(GLFWwindow* sceneRunnerWindow) : plane(20,20,1,1) ,teapot(5, glm::mat4(1.0f)),tPrev(0.0f),lightPos(5.0f,5.0f,5.0f,1.0f)
 {
     mesh = ObjMesh::load("../Project_Template/media/spot.obj");
+    object = ObjMesh::load("../Project_Template/media/spot.obj");
+    object1 = ObjMesh::load("../Project_Template/media/Goblet.obj");
+    object2 = ObjMesh::load("../Project_Template/media/spot.obj");
+    object3 = ObjMesh::load("../Project_Template/media/spot.obj");
+    object4 = ObjMesh::load("../Project_Template/media/spot.obj");
 
     window = sceneRunnerWindow;
 }
 
-float Roughnes, speed, Color[3], LightPos[3], objPos[3], objScale[3] = { 1.0f,1.0f,1.0f }, LightIntensity[3] = {45.0f,45.0f,45.0f };
+
+//variables used for ImGUI interactions;
+float Roughnes, speed, Color[3], LightPos[3], objPos[3],objRot[3], objScale[3] = { 1.0f,1.0f,1.0f }, LightIntensity[3] = {45.0f,45.0f,45.0f };
 bool wireframe,metalic = false;
+int objIndex = 0;
+const char* objects[5] = {"Spot","Goblet","Spot","Spot","Spot"};
 
 void SceneBasic_Uniform::initScene()
 {
@@ -136,7 +147,9 @@ void SceneBasic_Uniform::renderUserInterface()
     ImGui::Text("This is even more text");
     ImGui::SliderFloat3("Position", objPos, -4.00f, 4.00f);
     ImGui::SliderFloat3("Scale", objScale, 0.00f, 3.00f);
+    ImGui::SliderFloat3("Roation",objRot,-180.0f,180.0f);
     ImGui::Checkbox("Wireframe", &wireframe);
+    ImGui::Combo("Object loaded", &objIndex, objects, IM_ARRAYSIZE(objects));
     
 
     ImGui::End();
@@ -186,6 +199,8 @@ void SceneBasic_Uniform::drawScene()
     drawSpot(glm::vec3(-0.0f, 0.0f, -3.0f), metalRough, 1, glm::vec3(0.91f, 0.92f, 0.92f));
     drawSpot(glm::vec3(1.5f, 0.0f, -3.0f), metalRough, 1, glm::vec3(0.542f, 0.497f, 0.449f));
     drawSpot(glm::vec3(3.0f, 0.0f, -3.0f), metalRough, 1, glm::vec3(0.95f, 0.93f, 0.88f));
+
+    drawCustom(glm::vec3(objPos[0], objPos[1], objPos[2]), Roughnes, metalic, objIndex, glm::vec3(Color[0], Color[1],Color[2]), glm::vec3(objRot[0], objRot[1], objRot[2]) );
 }
 void SceneBasic_Uniform::drawFloor() 
 {
@@ -208,4 +223,39 @@ void SceneBasic_Uniform::drawSpot(const glm::vec3&pos, float rough, int metal, c
 
     setMatrices();
     mesh->render();
+}
+void SceneBasic_Uniform::drawCustom(const glm::vec3& pos, float rough, int metal, int index, const glm::vec3& color, const glm::vec3& rotation) 
+{
+    model = glm::mat4(1.0f);
+    prog.setUniform("Material.Rough", rough);
+    prog.setUniform("Material.Metal", metal);
+    prog.setUniform("Material.Color", color);
+    model = glm::translate(model, pos);
+    model = glm::scale(model, glm::vec3(objScale[0], objScale[1], objScale[2]));
+    model = glm::rotate(model, glm::radians(rotation[0]), vec3(1.0f, 0.0f, 0.0f));
+    model = glm::rotate(model, glm::radians(rotation[1]), vec3(0.0f, 1.0f, 0.0f));
+    model = glm::rotate(model, glm::radians(rotation[2]), vec3(0.0f, 0.0f, 1.0f));
+    
+
+    setMatrices();
+    switch (index)
+    {
+    case 0:
+        object->render();
+        break;
+    case 1:
+        object1->render();
+        break;
+    case 2:
+        object2->render();
+        break;
+    case 3:
+        object3->render();
+        break;
+    case 4:
+        object4->render();
+        break;
+    default:
+        break;
+    }
 }

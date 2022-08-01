@@ -11,7 +11,7 @@ public:
     int width;
     int height;
 
-	Scene() : m_animate(true), width(1800), height(1600) { }
+	Scene() : m_animate(true), width(1920), height(1080) { }
 	virtual ~Scene() {}
 
 	void setDimensions( int w, int h ) {

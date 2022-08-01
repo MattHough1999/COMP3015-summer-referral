@@ -21,6 +21,11 @@ private:
     //Torus torus;
     Plane plane;
     std::unique_ptr<ObjMesh> mesh;
+    std::unique_ptr<ObjMesh> object;
+    std::unique_ptr<ObjMesh> object1;
+    std::unique_ptr<ObjMesh> object2;
+    std::unique_ptr<ObjMesh> object3;
+    std::unique_ptr<ObjMesh> object4;
     Teapot teapot;
 
     float tPrev, lightAngle, lightRotationSpeed;
@@ -31,7 +36,7 @@ private:
     void drawScene();
     void drawFloor();
     void drawSpot(const glm::vec3& pos, float rough, int metal, const glm::vec3 & color);
-    void drawTeapot(const glm::vec3& pos, float rough, int metal, const glm::vec3& color,int rot);
+    void drawCustom(const glm::vec3& pos, float rough, int metal,int index, const glm::vec3& color,const glm::vec3 &rotation);
 public:
     SceneBasic_Uniform(GLFWwindow* sceneRunnerWindow);
 
