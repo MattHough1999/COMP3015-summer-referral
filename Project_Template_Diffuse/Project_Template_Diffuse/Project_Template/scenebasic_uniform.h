@@ -30,6 +30,7 @@ private:
 
     float tPrev, lightAngle, lightRotationSpeed;
     glm::vec4 lightPos;
+    glm::mat4 viewport;
     char tryFileName[64];
 
     void setMatrices();
