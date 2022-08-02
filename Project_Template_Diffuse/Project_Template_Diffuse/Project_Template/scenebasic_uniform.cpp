@@ -21,8 +21,8 @@ SceneBasic_Uniform::SceneBasic_Uniform(GLFWwindow* sceneRunnerWindow) : plane(20
     mesh = ObjMesh::load("../Project_Template/media/spot.obj");
     object = ObjMesh::load("../Project_Template/media/spot.obj");
     object1 = ObjMesh::load("../Project_Template/media/Goblet.obj");
-    object2 = ObjMesh::load("../Project_Template/media/spot.obj");
-    object3 = ObjMesh::load("../Project_Template/media/spot.obj");
+    object2 = ObjMesh::load("../Project_Template/media/trophy.obj");
+    object3 = ObjMesh::load("../Project_Template/media/pig_triangulated.obj");
     object4 = ObjMesh::load("../Project_Template/media/spot.obj");
 
     window = sceneRunnerWindow;
@@ -30,10 +30,10 @@ SceneBasic_Uniform::SceneBasic_Uniform(GLFWwindow* sceneRunnerWindow) : plane(20
 
 
 //variables used for ImGUI interactions;
-float Roughnes = 0.1f, speed, Color[3], LightPos[3], objPos[3],objRot[3], objScale[4] = { 1.0f,1.0f,1.0f ,1.0f}, LightIntensity[3] = {45.0f,45.0f,45.0f };
+float Roughnes = 0.1f, speed, Color[3] = {0.5f,0.5f,0.5f}, LightPos[3], objPos[3], objRot[3], objScale[4] = { 1.0f,1.0f,1.0f ,1.0f }, LightIntensity[3] = { 45.0f,45.0f,45.0f };
 bool wireframe,metalic = false;
 int objIndex = 0;
-const char* objects[5] = {"Spot","Goblet","Spot","Spot","Custom"};
+const char* objects[5] = {"Spot","Goblet","Trophy","Pig","Custom"};
 
 
 void SceneBasic_Uniform::initScene()
@@ -153,6 +153,7 @@ void SceneBasic_Uniform::renderUserInterface()
     {
         if(tryFileText())
         {
+            objIndex = 4;
             showErr = false;
         }
         else
@@ -193,7 +194,7 @@ void SceneBasic_Uniform::renderUserInterface()
 
     ImGui::NewLine();
     
-    ImGui::SliderFloat3("Roation",objRot,-180.0f,180.0f);
+    
     ImGui::SliderFloat("X Rot", &objRot[0], -180.0f, 180.0f);
     ImGui::SliderFloat("Y Rot", &objRot[1], -180.0f, 180.0f);
     ImGui::SliderFloat("Z Rot", &objRot[2], -180.0f, 180.0f);
