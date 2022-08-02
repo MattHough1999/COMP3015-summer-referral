@@ -165,8 +165,8 @@ void SceneBasic_Uniform::renderUserInterface()
     {
         ImGui::Text("Error Loading File, Try again");
     }
-
-    ImGui::Text("This is even more text");
+    ImGui::Combo("Object loaded", &objIndex, objects, IM_ARRAYSIZE(objects));
+    //ImGui::Text("This is even more text");
     
     
     ImGui::SliderFloat("X Pos", &objPos[0],-4.0f,4.0f);
@@ -207,8 +207,8 @@ void SceneBasic_Uniform::renderUserInterface()
     }
 
 
-    ImGui::Checkbox("Wireframe", &wireframe);
-    ImGui::Combo("Object loaded", &objIndex, objects, IM_ARRAYSIZE(objects));
+    //ImGui::Checkbox("Wireframe", &wireframe);
+    
     
 
     ImGui::End();
