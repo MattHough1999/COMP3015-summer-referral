@@ -177,7 +177,6 @@
     <None Include="shader\basic_uniform.vert" />
     <None Include="shader\PBR.frag" />
     <None Include="shader\PBR.vert" />
-    <None Include="shader\wireframe.geom" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="helper\aabb.h" />

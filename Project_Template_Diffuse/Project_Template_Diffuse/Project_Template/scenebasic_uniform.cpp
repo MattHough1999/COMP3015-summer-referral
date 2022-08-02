@@ -43,20 +43,17 @@ void SceneBasic_Uniform::initScene()
     glClearColor(0.1f, 0.1f, 0.2f, 0.1f);
 	glEnable(GL_DEPTH_TEST);
    
-    /*
+
     view = glm::lookAt(
         glm::vec3(0.0f,4.0f,7.0f),
         glm::vec3(0.0f,0.0f,0.0f),
         glm::vec3(0.0f,1.0f,0.0f));
-    */
-    float c = 1.5f;
-    projection = glm::ortho(-0.4f * c, 0.4f * c, -0.3f * c, 0.3f * c, 0.1f, 100.0f);
-    //projection = glm::perspective(glm::radians(50.f), (float)width / height, 0.5f, 100.0f);
+    
+    projection = glm::perspective(glm::radians(50.f), (float)width / height, 0.5f, 100.0f);
     lightAngle = 0.0f;
     lightRotationSpeed = 1.5f;
     
-    prog.setUniform("Line.Width", 0.75f);
-    prog.setUniform("Line.Color", glm::vec4(0.05f, 0.0f, 0.05f, 1.0f));
+
     prog.setUniform("Light[0].L", glm::vec3(45.0f));
     prog.setUniform("Light[0].Position", view * lightPos);
     prog.setUniform("Light[1].L", glm::vec3(0.3f));
@@ -82,7 +79,6 @@ void SceneBasic_Uniform::compile()
 	try {
 		prog.compileShader("shader/PBR.vert");
 		prog.compileShader("shader/PBR.frag");
-        prog.compileShader("shader/wireframe.geom");
 		prog.link();
 		prog.use();
 	} catch (GLSLProgramException &e) {
@@ -111,13 +107,11 @@ void SceneBasic_Uniform::update( float t )
 void SceneBasic_Uniform::render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    vec3 cameraPos(0.0f, 0.0f, 3.0f);
-    view = glm::lookAt(cameraPos, vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+
     prog.setUniform("Light[0].Position", view * lightPos);
     prog.setUniform("Light[0].L", glm::vec3(LightIntensity[0], LightIntensity[1], LightIntensity[2]));
     drawScene();
     renderUserInterface();
-    glFinish();
     //teapot.render();  
 }
 bool showErr = false;
@@ -232,10 +226,9 @@ void SceneBasic_Uniform::setMatrices()
     
     prog.setUniform("ModelViewMatrix", mv); //set the uniform for the model view matrix
     
-    prog.setUniform("NormalMatrix", glm::mat3(glm::vec3(mv[0]), glm::vec3(mv[1]), glm::vec3(mv[2]))); //we set the uniform for normal matrix
+    prog.setUniform("NormalMatrix", glm::mat3(mv)); //we set the uniform for normal matrix
     
     prog.setUniform("MVP", projection * mv); //we set the model view matrix by multiplying the mv with the projection matrix
-    prog.setUniform("ViewportMatrix", viewport);
 }
 
 void SceneBasic_Uniform::resize(int w, int h)
@@ -243,11 +236,7 @@ void SceneBasic_Uniform::resize(int w, int h)
     glViewport(0, 0, w, h);
     width = w;
     height = h;
-    float w2 = w / 2.0f;
-    float h2 = h / 2.0f;
-    //projection = glm::perspective(glm::radians(60.0f), (float) width / height, 0.3f, 100.0f);
-    viewport = glm::mat4(glm::vec4(w2, 0.0f, 0.0f, 0.0f), glm::vec4(0.0f, h2, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, 1.0f, 0.0f), glm::vec4(w2 + 0, h2 + 0, 0.0f, 1.0f));
-    
+    projection = glm::perspective(glm::radians(60.0f), (float) width / height, 0.3f, 100.0f);
 }
 
 void SceneBasic_Uniform::drawScene()

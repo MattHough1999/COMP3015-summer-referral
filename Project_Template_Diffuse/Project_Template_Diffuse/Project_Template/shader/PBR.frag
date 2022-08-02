@@ -3,10 +3,6 @@ const float PI = 3.14159265358979323846;
 //in variable that receives the diffuse calculation from the vertex shader
 in vec3 Position;
 in vec3 Normal;
-in vec3 GPosition;
-in vec3 GNormal;
-noperspective in vec3 GEdgeDistance;
-
 
 uniform struct LightInfo
 {
@@ -20,12 +16,6 @@ uniform struct MaterialInfo
     bool Metal;
     vec3 Color;
 } Material;
-
-uniform struct lineInfo
-{
-    float Width;
-    vec4 Color;
-} Line;
 
 //out variable, this typical for all fragment shaders
 layout (location = 0) out vec4 FragColor;
@@ -93,22 +83,6 @@ void main()
 
     sum = pow(sum,vec3(1.0/2.2));
 
-    float d = min(GEdgeDistance.x,GEdgeDistance.y);
-    d = min(d, GEdgeDistance.z);
-    float mixVal;
-    if(d < Line.Width - 1)
-    {
-        mixVal = 1.0;
-    }
-    else if(d> Line.Width + 1)
-    {
-        mixVal = 0;
-    }
-    else
-    {
-        float x = d - (Line.Width-1);
-        mixVal = exp2(-2.0 * (x*x));
-    }
-    FragColor = mix(vec4(sum,1), Line.Color,mixVal);
-    //FragColor = vec4(sum,1);
+
+    FragColor = vec4(sum,1);
 }
