@@ -12,11 +12,13 @@
 #include "helper/objmesh.h"
 #include <glm/glm.hpp>
 #include "GLFW/glfw3.h"
+#include "helper/frustum.h"
 
 class SceneBasic_Uniform : public Scene
 {
 private:
-    GLSLProgram prog;
+    GLSLProgram prog,solidProg;
+    GLuint shadowFBO, pass1Index, pass2Index;
     
     //Torus torus;
     Plane plane;
@@ -28,17 +30,27 @@ private:
     std::unique_ptr<ObjMesh> object4;
     Teapot teapot;
 
-    float tPrev, lightAngle, lightRotationSpeed;
+    int shadowMapWidth, shadowMapHeight;
+
+
+    float tPrev,angle, lightAngle, lightRotationSpeed;
     glm::vec4 lightPos;
     char tryFileName[64];
 
+    glm::mat4 lightPV, shadowBias;
+    Frustum lightFrustum;
+
     void setMatrices();
     void compile();
+    void setupFBO();
+
     void drawScene();
     void drawFloor();
     void drawSpot(const glm::vec3& pos, float rough, int metal, const glm::vec3 & color);
     void drawCustom(const glm::vec3& pos, float rough, int metal,int index, const glm::vec3& color,const glm::vec3 &rotation);
     bool tryFileText();
+
+    void spitOutDepthBuffer();
 public:
     SceneBasic_Uniform(GLFWwindow* sceneRunnerWindow);
 

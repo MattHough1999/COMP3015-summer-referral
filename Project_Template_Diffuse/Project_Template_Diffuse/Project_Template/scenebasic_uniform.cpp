@@ -16,7 +16,7 @@ using glm::mat4;
 
 GLFWwindow* window;
 //constructor for torus
-SceneBasic_Uniform::SceneBasic_Uniform(GLFWwindow* sceneRunnerWindow) : plane(20,20,1,1) ,teapot(5, glm::mat4(1.0f)),tPrev(0.0f),lightPos(5.0f,5.0f,5.0f,1.0f)
+SceneBasic_Uniform::SceneBasic_Uniform(GLFWwindow* sceneRunnerWindow) : shadowMapWidth(512),shadowMapHeight(512), plane(20,20,1,1) ,teapot(5, glm::mat4(1.0f)),tPrev(0.0f),lightPos(5.0f,5.0f,5.0f,1.0f)
 {
     mesh = ObjMesh::load("../Project_Template/media/spot.obj");
     object = ObjMesh::load("../Project_Template/media/spot.obj");
@@ -40,10 +40,26 @@ void SceneBasic_Uniform::initScene()
 {
     
    compile();
-    glClearColor(0.1f, 0.1f, 0.2f, 0.1f);
+    glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
    
+    angle = glm::quarter_pi<float>();
+    setupFBO();
+    GLuint programHandle = prog.getHandle();
+    pass1Index = glGetSubroutineIndex(programHandle, GL_FRAGMENT_SHADER, "recordDepth");
+    pass2Index = glGetSubroutineIndex(programHandle, GL_FRAGMENT_SHADER, "shadeWithShadow");
 
+    shadowBias = mat4(glm::vec4(0.5f, 0.0f, 0.0f, 0.0f), glm::vec4(0.0f, 0.5f, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, 0.5f, 0.0f), glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
+    float c = 1.65f;
+    vec3 lightPos = vec3(0.0f, c * 5.25, c * 7.5);
+    lightFrustum.orient(lightPos, vec3(0.0f), vec3(0.0f, 1.0f, 0.0f));
+    lightFrustum.setPerspective(50.0f, 1.0f, 1.0f, 25.0f);
+    lightPV = shadowBias * lightFrustum.getProjectionMatrix() * lightFrustum.getViewMatrix();
+
+    prog.setUniform("Light.Intensity", vec3(0.85));
+    prog.setUniform("ShadowMap", 0);
+
+    /*
     view = glm::lookAt(
         glm::vec3(0.0f,4.0f,7.0f),
         glm::vec3(0.0f,0.0f,0.0f),
@@ -60,7 +76,7 @@ void SceneBasic_Uniform::initScene()
     prog.setUniform("Light[1].Position", glm::vec4(0,0.15f,-1.0f,0));
     prog.setUniform("Light[2].L", glm::vec3(45.0f));
     prog.setUniform("Light[2].Position", view * glm::vec4(-7,3,7,1));
-
+    */
     //IMGUI
 
     IMGUI_CHECKVERSION();
@@ -77,10 +93,14 @@ void SceneBasic_Uniform::initScene()
 void SceneBasic_Uniform::compile()
 {
 	try {
-		prog.compileShader("shader/PBR.vert");
-		prog.compileShader("shader/PBR.frag");
+		prog.compileShader("shader/basic_uniform.vert");
+		prog.compileShader("shader/basic_uniform.frag");
 		prog.link();
 		prog.use();
+
+        solidProg.compileShader("shader/Shadows.vert", GLSLShader::VERTEX);
+        solidProg.compileShader("shader/Shadows.frag", GLSLShader::FRAGMENT);
+        solidProg.link();
 	} catch (GLSLProgramException &e) {
 		cerr << e.what() << endl;
 		exit(EXIT_FAILURE);
@@ -94,23 +114,57 @@ void SceneBasic_Uniform::update( float t )
     if (tPrev == 0.0f) { deltaT = 0.0f; }
 
     tPrev = t;
-
+    angle += 0.2f * deltaT;
+    if(angle > glm::two_pi<float>())
+    {
+        angle -= glm::two_pi<float>();
+    }
+    /*
     if(animating())
     {
         lightAngle = glm::mod(lightAngle + deltaT * lightRotationSpeed, glm::two_pi<float>());
         lightPos.x = (glm::cos(lightAngle) * 7.0f) + LightPos[0];
         lightPos.y = 3.0f + LightPos[1];
         lightPos.z = (glm::sin(lightAngle) * 7.0f) + LightPos[2];
-    }
+    }*/
 }
 
 void SceneBasic_Uniform::render()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    prog.use();
+    view = lightFrustum.getViewMatrix();
+    projection = lightFrustum.getProjectionMatrix();
+    glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
+    glClear(GL_DEPTH_BUFFER_BIT);
+    glViewport(0, 0, shadowMapWidth, shadowMapHeight);
+    glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &pass1Index);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
+    glEnable(GL_POLYGON_OFFSET_FILL);
+    glPolygonOffset(2.5f, 10.f);
 
-    prog.setUniform("Light[0].Position", view * lightPos);
-    prog.setUniform("Light[0].L", glm::vec3(LightIntensity[0], LightIntensity[1], LightIntensity[2]));
+    //prog.setUniform("Light[0].Position", view * lightPos);
+    //prog.setUniform("Light[0].L", glm::vec3(LightIntensity[0], LightIntensity[1], LightIntensity[2]));
     drawScene();
+    glCullFace(GL_BACK);
+    glFlush();
+    float c = 2.0f;
+    vec3 cameraPos(c * 11.5 * cos(angle), c * 7.0f, c * 11.5 * sin(angle));
+    view = glm::lookAt(cameraPos, vec3(0.0f), vec3(0.0f, 1.0f, 0.0f));
+    prog.setUniform("Light.Position", view * glm::vec4(lightFrustum.getOrigin(), 1.0f));
+    projection = glm::perspective(glm::radians(50.0f), (float)width / height, 0.1f, 100.0f);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glViewport(0, 0, width, height);
+    glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &pass2Index);
+    drawScene();
+
+    solidProg.use();
+    solidProg.setUniform("Color", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+    mat4 mv = view * lightFrustum.getInverseViewMatrix();
+    solidProg.setUniform("MVP", projection * mv);
+    lightFrustum.render();
+       
     renderUserInterface();
     //teapot.render();  
 }
@@ -226,9 +280,12 @@ void SceneBasic_Uniform::setMatrices()
     
     prog.setUniform("ModelViewMatrix", mv); //set the uniform for the model view matrix
     
-    prog.setUniform("NormalMatrix", glm::mat3(mv)); //we set the uniform for normal matrix
+    prog.setUniform("NormalMatrix", glm::mat3(vec3(mv[0]), vec3(mv[1]), vec3(mv[2])));
+    //prog.setUniform("NormalMatrix", glm::mat3(mv)); //we set the uniform for normal matrix
     
     prog.setUniform("MVP", projection * mv); //we set the model view matrix by multiplying the mv with the projection matrix
+
+    prog.setUniform("ShadowMatrix", lightPV * model);
 }
 
 void SceneBasic_Uniform::resize(int w, int h)
@@ -236,7 +293,7 @@ void SceneBasic_Uniform::resize(int w, int h)
     glViewport(0, 0, w, h);
     width = w;
     height = h;
-    projection = glm::perspective(glm::radians(60.0f), (float) width / height, 0.3f, 100.0f);
+    //projection = glm::perspective(glm::radians(60.0f), (float) width / height, 0.3f, 100.0f);
 }
 
 void SceneBasic_Uniform::drawScene()
@@ -263,20 +320,39 @@ void SceneBasic_Uniform::drawScene()
 }
 void SceneBasic_Uniform::drawFloor() 
 {
+    prog.setUniform("Material.Kd",0.25f,0.25f,0.25f);
+    prog.setUniform("Material.Ks", 0.0f, 0.0f, 0.0f);
+    prog.setUniform("Material.Shininess", 1.0f);
+
     model = glm::mat4(1.0f);
-    prog.setUniform("Material.Rough", 0.9f);
-    prog.setUniform("Material.Metal", 0);
-    prog.setUniform("Material.Color", glm::vec3(0.2f));
-    model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0f));
     setMatrices();
     plane.render();
+    /*prog.setUniform("Material.Rough", 0.9f);
+    prog.setUniform("Material.Metal", 0);
+    prog.setUniform("Material.Color", glm::vec3(0.2f));*/
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(-5.0f, 5.0f, 0.0f));
+    model = glm::rotate(model, glm::radians(-90.0f), vec3(0.0f, 0.0f, 1.0f));
+    setMatrices();
+    plane.render();
+
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0.0f, 5.0f, -5.0f));
+    model = glm::rotate(model, glm::radians(90.0f), vec3(1.0f, 0.0f, 0.0f));
+    setMatrices();
+    plane.render();
+    model = mat4(1.0f);
 }
 void SceneBasic_Uniform::drawSpot(const glm::vec3&pos, float rough, int metal, const glm::vec3&color)
 {
     model = glm::mat4(1.0f);
+    /*
     prog.setUniform("Material.Rough", rough);
     prog.setUniform("Material.Metal", metal);
-    prog.setUniform("Material.Color", color);
+    prog.setUniform("Material.Color", color);*/
+    prog.setUniform("Material.Kd", 0.25f, 0.25f, 0.25f);
+    prog.setUniform("Material.Ks", 0.0f, 0.0f, 0.0f);
+    prog.setUniform("Material.Shininess", 1.0f);
     model = glm::translate(model, pos);
     model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
@@ -286,9 +362,14 @@ void SceneBasic_Uniform::drawSpot(const glm::vec3&pos, float rough, int metal, c
 void SceneBasic_Uniform::drawCustom(const glm::vec3& pos, float rough, int metal, int index, const glm::vec3& color, const glm::vec3& rotation) 
 {
     model = glm::mat4(1.0f);
+    /*
     prog.setUniform("Material.Rough", rough);
     prog.setUniform("Material.Metal", metal);
     prog.setUniform("Material.Color", color);
+    */
+    prog.setUniform("Material.Kd", 0.25f, 0.25f, 0.25f);
+    prog.setUniform("Material.Ks", 0.0f, 0.0f, 0.0f);
+    prog.setUniform("Material.Shininess", 1.0f);
     model = glm::translate(model, pos);
     model = glm::scale(model, glm::vec3(objScale[0] * objScale[3], objScale[1] * objScale[3], objScale[2] * objScale[3]));
     model = glm::rotate(model, glm::radians(rotation[0]), vec3(1.0f, 0.0f, 0.0f));
@@ -317,6 +398,42 @@ void SceneBasic_Uniform::drawCustom(const glm::vec3& pos, float rough, int metal
     default:
         break;
     }
+}
+void SceneBasic_Uniform::setupFBO() 
+{
+    GLfloat border[] = { 1.0f,0.0f,0.0f,0.0f };
+    GLuint depthTex;
+    glGenTextures(1, &depthTex);
+    glBindTexture(GL_TEXTURE_2D, depthTex);
+    glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT24, shadowMapWidth, shadowMapHeight);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LESS);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, depthTex);
+
+    glGenFramebuffers(1, &shadowFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTex, 0);
+
+    GLenum drawbuffers[] = { GL_NONE };
+    glDrawBuffers(1, drawbuffers);
+    GLenum result = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if(result == GL_FRAMEBUFFER_COMPLETE)
+    {
+        printf("FrameBuffer Is Complete\n");
+    }
+    else 
+    {
+        printf("FrameBuffer Is Not Compete\n");
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 }
 bool SceneBasic_Uniform::tryFileText()
 {
