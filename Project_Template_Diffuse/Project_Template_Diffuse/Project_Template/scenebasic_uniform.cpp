@@ -16,7 +16,7 @@ using glm::mat4;
 
 GLFWwindow* window;
 //constructor for torus
-SceneBasic_Uniform::SceneBasic_Uniform(GLFWwindow* sceneRunnerWindow) : time(0), plane(20,20,1,1) ,teapot(5, glm::mat4(1.0f)),tPrev(0.0f),lightPos(5.0f,5.0f,5.0f,1.0f)
+SceneBasic_Uniform::SceneBasic_Uniform(GLFWwindow* sceneRunnerWindow) : time(0), plane(20,20,200,1) ,teapot(5, glm::mat4(1.0f)),tPrev(0.0f),lightPos(5.0f,5.0f,5.0f,1.0f)
 {
     mesh = ObjMesh::load("../Project_Template/media/spot.obj");
     object = ObjMesh::load("../Project_Template/media/spot.obj");
@@ -30,8 +30,8 @@ SceneBasic_Uniform::SceneBasic_Uniform(GLFWwindow* sceneRunnerWindow) : time(0),
 
 
 //variables used for ImGUI interactions;
-float Roughnes = 0.1f, speed, Color[3] = {0.5f,0.5f,0.5f}, LightPos[3], objPos[3], objRot[3], objScale[4] = { 1.0f,1.0f,1.0f ,1.0f }, LightIntensity[3] = { 45.0f,45.0f,45.0f };
-bool wireframe,metalic = false;
+float Roughnes = 0.1f, speed,freq = 2.5f,amplitude = 0.6f,vel = 2.5f, Color[3] = {0.5f,0.5f,0.5f}, LightPos[3], objPos[3], objRot[3], objScale[4] = { 1.0f,1.0f,1.0f ,1.0f }, LightIntensity[3] = { 45.0f,45.0f,45.0f };
+bool wireframe,guiAnimated = false,metalic = false;
 int objIndex = 0;
 const char* objects[5] = {"Spot","Goblet","Trophy","Pig","Custom"};
 
@@ -44,14 +44,7 @@ void SceneBasic_Uniform::initScene()
 	glEnable(GL_DEPTH_TEST);
    
     angle = glm::half_pi<float>();
-    /*
-    view = glm::lookAt(
-        glm::vec3(0.0f,4.0f,7.0f),
-        glm::vec3(0.0f,0.0f,0.0f),
-        glm::vec3(0.0f,1.0f,0.0f));
-    
-    projection = glm::perspective(glm::radians(50.f), (float)width / height, 0.5f, 100.0f);
-    */
+  
     lightAngle = 0.0f;
     lightRotationSpeed = 1.5f;
     
@@ -120,6 +113,9 @@ void SceneBasic_Uniform::render()
     projection = glm::perspective(glm::radians(60.f), (float)width / height, 0.3f, 100.0f);
     prog.setUniform("Light[0].Position", view * lightPos);
     prog.setUniform("Light[0].L", glm::vec3(LightIntensity[0], LightIntensity[1], LightIntensity[2]));
+    prog.setUniform("Freq", freq);
+    prog.setUniform("Velocity", vel);
+    prog.setUniform("AMP", amplitude);
     drawScene();
     renderUserInterface();
     //teapot.render();  
@@ -223,7 +219,15 @@ void SceneBasic_Uniform::renderUserInterface()
 
     ImGui::End();
 
+    ImGui::Begin("Animation");
+
+    ImGui::Checkbox("Animate",&guiAnimated);
     
+    ImGui::SliderFloat("Velocity", &vel, 0.0f, 10.0f);
+    ImGui::SliderFloat("Amplitude", &amplitude, 0.0f, 10.0f);
+    ImGui::SliderFloat("Frequency", &freq, 0.0f, 10.0f);
+
+    ImGui::End();
 
     ImGui::Render();
     int display_w, display_h;
@@ -274,7 +278,8 @@ void SceneBasic_Uniform::drawScene()
 }
 void SceneBasic_Uniform::drawFloor() 
 {
-    prog.setUniform("animated", true);
+    if (guiAnimated) { prog.setUniform("animated", true); }
+    else { prog.setUniform("animated", false); }
     model = glm::mat4(1.0f);
     prog.setUniform("Material.Rough", 0.9f);
     prog.setUniform("Material.Metal", 0);
