@@ -15,6 +15,7 @@ uniform float Time;
 uniform float Freq = 2.5;
 uniform float Velocity = 2.5;
 uniform float AMP = 0.6;
+uniform bool animated = false;
 
 //uniforms for matrices required in the shader
 uniform mat4 ModelViewMatrix;   //model view matrix
@@ -23,6 +24,8 @@ uniform mat4 MVP;				//model view projection matrix
  
 void main() 
 { 
+	if(animated)
+	{
 	vec4 pos = vec4(VertexPosition,1.0);
 	float u = Freq * pos.x - Velocity * Time;
 	pos.y = AMP * sin(u);
@@ -31,11 +34,22 @@ void main()
 
 	Position = ModelViewMatrix * pos;
 	Normal = NormalMatrix * n;
+	gl_Position = MVP * pos; 
+	}
+	else
+	{
+	Normal = normalize(NormalMatrix * VertexNormal);
 
+  Position = (ModelViewMatrix * vec4(VertexPosition,1.0));
+
+  //turns any vertex position into model view projection in preparations to 
+  //graphics pipeline processes before fragment shader (clipping)
+  gl_Position = MVP * vec4(VertexPosition,1.0); 
+	}
 	
 	//TexCoord = VertexTexCoord;
 
   //turns any vertex position into model view projection in preparations to 
   //graphics pipeline processes before fragment shader (clipping)
-	gl_Position = MVP * pos; 
+	
 } 

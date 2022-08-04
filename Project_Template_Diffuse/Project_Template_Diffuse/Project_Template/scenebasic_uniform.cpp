@@ -223,6 +223,7 @@ void SceneBasic_Uniform::renderUserInterface()
 
     ImGui::End();
 
+    
 
     ImGui::Render();
     int display_w, display_h;
@@ -273,7 +274,7 @@ void SceneBasic_Uniform::drawScene()
 }
 void SceneBasic_Uniform::drawFloor() 
 {
-    
+    prog.setUniform("animated", true);
     model = glm::mat4(1.0f);
     prog.setUniform("Material.Rough", 0.9f);
     prog.setUniform("Material.Metal", 0);
@@ -284,6 +285,7 @@ void SceneBasic_Uniform::drawFloor()
 }
 void SceneBasic_Uniform::drawSpot(const glm::vec3&pos, float rough, int metal, const glm::vec3&color)
 {
+    prog.setUniform("animated", false);
     model = glm::mat4(1.0f);
     prog.setUniform("Material.Rough", rough);
     prog.setUniform("Material.Metal", metal);
@@ -296,6 +298,7 @@ void SceneBasic_Uniform::drawSpot(const glm::vec3&pos, float rough, int metal, c
 }
 void SceneBasic_Uniform::drawCustom(const glm::vec3& pos, float rough, int metal, int index, const glm::vec3& color, const glm::vec3& rotation) 
 {
+    prog.setUniform("animated", false);
     model = glm::mat4(1.0f);
     prog.setUniform("Material.Rough", rough);
     prog.setUniform("Material.Metal", metal);
