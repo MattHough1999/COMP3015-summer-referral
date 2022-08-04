@@ -16,7 +16,7 @@ using glm::mat4;
 
 GLFWwindow* window;
 //constructor for torus
-SceneBasic_Uniform::SceneBasic_Uniform(GLFWwindow* sceneRunnerWindow) : plane(20,20,1,1) ,teapot(5, glm::mat4(1.0f)),tPrev(0.0f),lightPos(5.0f,5.0f,5.0f,1.0f)
+SceneBasic_Uniform::SceneBasic_Uniform(GLFWwindow* sceneRunnerWindow) : time(0), plane(20,20,1,1) ,teapot(5, glm::mat4(1.0f)),tPrev(0.0f),lightPos(5.0f,5.0f,5.0f,1.0f)
 {
     mesh = ObjMesh::load("../Project_Template/media/spot.obj");
     object = ObjMesh::load("../Project_Template/media/spot.obj");
@@ -40,16 +40,18 @@ void SceneBasic_Uniform::initScene()
 {
     
    compile();
-    glClearColor(0.1f, 0.1f, 0.2f, 0.1f);
+    glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
    
-
+    angle = glm::half_pi<float>();
+    /*
     view = glm::lookAt(
         glm::vec3(0.0f,4.0f,7.0f),
         glm::vec3(0.0f,0.0f,0.0f),
         glm::vec3(0.0f,1.0f,0.0f));
     
     projection = glm::perspective(glm::radians(50.f), (float)width / height, 0.5f, 100.0f);
+    */
     lightAngle = 0.0f;
     lightRotationSpeed = 1.5f;
     
@@ -89,6 +91,7 @@ void SceneBasic_Uniform::compile()
 
 void SceneBasic_Uniform::update( float t )
 {
+    time = t;
 	//update your angle here
     float deltaT = t - tPrev;
     if (tPrev == 0.0f) { deltaT = 0.0f; }
@@ -106,8 +109,15 @@ void SceneBasic_Uniform::update( float t )
 
 void SceneBasic_Uniform::render()
 {
+    prog.setUniform("Time", time);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    view = glm::lookAt(
+        glm::vec3(10.0f * cos(angle), 4.0f, 10.0f * sin(angle)),
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 1.0f, 0.0f));
+
+    projection = glm::perspective(glm::radians(60.f), (float)width / height, 0.3f, 100.0f);
     prog.setUniform("Light[0].Position", view * lightPos);
     prog.setUniform("Light[0].L", glm::vec3(LightIntensity[0], LightIntensity[1], LightIntensity[2]));
     drawScene();
@@ -236,7 +246,7 @@ void SceneBasic_Uniform::resize(int w, int h)
     glViewport(0, 0, w, h);
     width = w;
     height = h;
-    projection = glm::perspective(glm::radians(60.0f), (float) width / height, 0.3f, 100.0f);
+    projection = glm::perspective(glm::radians(60.0f), (float) w / h, 0.3f, 100.0f);
 }
 
 void SceneBasic_Uniform::drawScene()
@@ -263,6 +273,7 @@ void SceneBasic_Uniform::drawScene()
 }
 void SceneBasic_Uniform::drawFloor() 
 {
+    
     model = glm::mat4(1.0f);
     prog.setUniform("Material.Rough", 0.9f);
     prog.setUniform("Material.Metal", 0);

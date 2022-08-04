@@ -28,7 +28,7 @@ private:
     std::unique_ptr<ObjMesh> object4;
     Teapot teapot;
 
-    float tPrev, lightAngle, lightRotationSpeed;
+    float tPrev, lightAngle, lightRotationSpeed, angle,time;
     glm::vec4 lightPos;
     char tryFileName[64];
 

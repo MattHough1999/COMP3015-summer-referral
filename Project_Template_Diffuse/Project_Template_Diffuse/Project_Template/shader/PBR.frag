@@ -1,7 +1,7 @@
 #version 460
 const float PI = 3.14159265358979323846;
 //in variable that receives the diffuse calculation from the vertex shader
-in vec3 Position;
+in vec4 Position;
 in vec3 Normal;
 
 uniform struct LightInfo
@@ -78,7 +78,7 @@ void main()
 
     for(int i = 0; i < 3; i++)
     {
-        sum += microfacetModel(i,Position,n);
+        sum += microfacetModel(i,Position.xyz,n);
     }
 
     sum = pow(sum,vec3(1.0/2.2));
