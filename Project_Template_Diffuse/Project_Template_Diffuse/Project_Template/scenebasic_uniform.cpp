@@ -9,6 +9,7 @@ using std::endl;
 #include "ImGUI/imgui.h"
 #include "ImGUI/imgui_impl_glfw.h"
 #include "ImGUI/imgui_impl_opengl3.h"
+#include "helper/frustum.h"
 
 #include <string>
 using glm::vec3;
@@ -165,7 +166,7 @@ void SceneBasic_Uniform::render()
     solidProg.setUniform("MVP", projection * mv);
     lightFrustum.render();
        
-    renderUserInterface();
+    //renderUserInterface();
     //teapot.render();  
 }
 bool showErr = false;
