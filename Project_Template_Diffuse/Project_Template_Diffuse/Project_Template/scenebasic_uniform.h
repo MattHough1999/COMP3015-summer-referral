@@ -18,14 +18,9 @@ class SceneBasic_Uniform : public Scene
 private:
     GLSLProgram prog;
     
-    //Torus torus;
     Plane plane;
-    std::unique_ptr<ObjMesh> mesh;
-    std::unique_ptr<ObjMesh> object;
-    std::unique_ptr<ObjMesh> object1;
-    std::unique_ptr<ObjMesh> object2;
-    std::unique_ptr<ObjMesh> object3;
-    std::unique_ptr<ObjMesh> object4;
+    std::unique_ptr<ObjMesh> mesh,object,object1,object2,object3,customOBJ;
+    
     Teapot teapot;
 
     float tPrev, lightAngle, lightRotationSpeed, angle,time;

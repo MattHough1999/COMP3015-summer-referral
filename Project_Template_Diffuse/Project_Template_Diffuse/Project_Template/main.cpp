@@ -6,7 +6,7 @@
 
 int main(int argc, char* argv[])
 {
-	SceneRunner runner("PBR Shader Demo");
+	SceneRunner runner("PBR And Vertex Animation Shader Demo");
 
 	std::unique_ptr<Scene> scene;
 

@@ -64,15 +64,10 @@ vec3 microfacetModel(int lightIdx, vec3 position, vec3 n)
     float nDotV = dot(n,v);
     vec3 specBrdf = 0.25 * ggxDistribution(nDotH) * schlickFresnel(lDotH) * geomSmith(nDotL) * geomSmith(nDotV);
     return (diffuseBrdf + PI * specBrdf) * lightI * nDotL;
-
-
 }
 
 void main()
 {
-    //we pass LightInyensity to outr FragColor, notice the difference between vector types
-    // vec3 and vec4 and how we solved the problem
-
     vec3 sum = vec3(0);
     vec3 n = normalize(Normal);
 
