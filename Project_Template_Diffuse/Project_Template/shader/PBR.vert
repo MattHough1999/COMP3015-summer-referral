@@ -26,12 +26,12 @@ void main()
 	{
 		vec4 pos = vec4(VertexPosition,1.0);
 		float u = Freq * pos.x - Velocity * Time;
-		pos.y = AMP * sin(u);
+		pos.y = (AMP * sin(u) + VertexPosition.y);
 		vec3 n = vec3(0.0);
 		n.xy = normalize(vec2(cos(u),1.0));
 
 		Position = ModelViewMatrix * pos;
-		Normal = NormalMatrix * n;
+		Normal = normalize((NormalMatrix * n) * VertexNormal);
 		gl_Position = MVP * pos; 
 	}
 	else

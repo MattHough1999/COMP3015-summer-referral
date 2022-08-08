@@ -216,7 +216,7 @@ void SceneBasic_Uniform::renderUserInterface()
 
     ImGui::Checkbox("Animate",&guiAnimated);
     ImGui::SliderFloat("Velocity", &vel, 0.0f, 10.0f);
-    ImGui::SliderFloat("Amplitude", &amplitude, 0.0f, 10.0f);
+    ImGui::SliderFloat("Amplitude", &amplitude, 0.0f, 1.0f);
     ImGui::SliderFloat("Frequency", &freq, 0.0f, 10.0f);
 
     ImGui::End();
@@ -275,9 +275,7 @@ void SceneBasic_Uniform::drawScene()
 }
 void SceneBasic_Uniform::drawFloor() 
 {
-    //Checks to see if vertex animation is enabled on ImGUI
-    if (guiAnimated) { prog.setUniform("animated", true); }
-    else { prog.setUniform("animated", false); }
+   prog.setUniform("animated", true);
 
     model = glm::mat4(1.0f);
     //Sets the plane shader uniforms, places it within the scene and then renders the plane
@@ -305,7 +303,8 @@ void SceneBasic_Uniform::drawSpot(const glm::vec3&pos, float rough, int metal, c
 void SceneBasic_Uniform::drawCustom(const glm::vec3& pos, float rough, int metal, int index, const glm::vec3& color, const glm::vec3& rotation) 
 {
     //Uses the paramters passed in to set shader uniforms, model postion, rotation and scale
-    prog.setUniform("animated", false);
+    if (guiAnimated) { prog.setUniform("animated", true); }
+    else { prog.setUniform("animated", false); }
     model = glm::mat4(1.0f);
     prog.setUniform("Material.Rough", rough);
     prog.setUniform("Material.Metal", metal);

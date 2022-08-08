@@ -29,7 +29,7 @@ float ggxDistribution (float nDotH)
 
 float geomSmith(float dotProd)
 {
-    float k = (Material.Rough + 1.0 ) * (Material.Rough + 1.0)/8.0f;
+    float k = (Material.Rough + 1.0 ) * (Material.Rough + 1.0)/8.0;
     float denom = dotProd * (1-k) + k;
     return 1.0 / denom;
 }
