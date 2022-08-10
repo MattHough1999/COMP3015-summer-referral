@@ -43,36 +43,32 @@ The program will run and open the display window.
 ### During Runtime
 Program operation is the same during runtime whether you run the executable or visual studio project. 
 When you first open the project it is likely that the User interface will look something like this; bunched up in the corner.
-<img src="./ReportMedia/ShaderWindow.png" width="1000" height="769" />
-![guiWindows](https://user-images.githubusercontent.com/43546852/183924808-992dab43-774c-4079-9b66-eea39bb63984.png)
+<img src="./ReportMedia/guiWindows.png" width="1000" height="769" />
+
 To rectify this simply click and drag each window until it is in a position that suits you. Below is the layout that I use
-<img src="./ReportMedia/ShaderWindow.png" width="1000" height="769" />
-![guiWindows2](https://user-images.githubusercontent.com/43546852/183928320-33a83513-9b8d-45c8-a00e-f1d3517f375b.png)
+<img src="./ReportMedia/guiWindows2.png" width="1000" height="769" />
+
 
 #### Scene layout
 The scene should look like the image above: A rippling plane undergoing vertex animation; 9 iterations of the "Spot" model with stepped increases in roughness. In front of that, 5 "Spot" models demonstrating metallic properties. Finally a "Spot" model facing the opposite way. This "Spot" is the placeholder for the custom models. It can be interacted with menus detailed below. The scene has 3 lights. Two of these lights are fixed and one orbits the scene. This light can also be manipulated with the user interface.
 
 #### Shader Menu
-![Shader Window](https://user-images.githubusercontent.com/43546852/183930294-399781ee-9f8b-4705-a6a5-c8821d5264c2.png)
 
 <img src="./ReportMedia/ShaderWindow.png" width="255" height="102" />
 
 The shader menu changes the properties of the shader attached to the object in the middle of the scene. The controls update the shader uniforms which will update the material properties of the object.
 #### Animation Menu
-<img src="./ReportMedia/ShaderWindow.png" width="241" height="125" />
+<img src="./ReportMedia/AnimationWindow.png" width="241" height="125" />
 
-![Animation Window](https://user-images.githubusercontent.com/43546852/183930297-45adca10-b482-4718-93ff-7284f108b1e1.png)
 The animation menu changes the properties of the vertex animation within the shader. The **Velocity** slider changes the speed of the Sine wave, **Amplitude** changes the height of the Sine wave, **Frequency** changes the frequency of the wave and the **Animate** checkbox toggles the middle scene object between animating and not animating.
 #### Lights Menu
-![Lights Window](https://user-images.githubusercontent.com/43546852/183930288-eae91e16-51ce-452e-a6ed-ad332964b0a9.png)
 
-<img src="./ReportMedia/ShaderWindow.png" width="429" height="118" />
+<img src="./ReportMedia/LightsWindow.png" width="429" height="118" />
 
 The lights menu controls the primary light in the scene. The other two lights are permanent within the scene and cannot be controlled. **Rotation Speed** Changes how fast the light orbits the scene. **Intensity** Controls the RGB colour and strength of the light.
 #### Object Menu
-![Object Window](https://user-images.githubusercontent.com/43546852/183930292-b53b9c84-1861-4121-810d-0206514b93bd.png)
 
-<img src="./ReportMedia/ShaderWindow.png" width="493" height="386" />
+<img src="./ReportMedia/ObjectWindow.png" width="493" height="386" />
 
 The object menu houses a lot of controls, however most of the controls are relatively intuitive.  To break it down each of the following paragraphs will cover each block of controls.
 ##### File loading
