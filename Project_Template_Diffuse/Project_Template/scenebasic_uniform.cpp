@@ -19,12 +19,12 @@ GLFWwindow* window;
 SceneBasic_Uniform::SceneBasic_Uniform(GLFWwindow* sceneRunnerWindow) : time(0), plane(20,20,200,1) ,teapot(5, glm::mat4(1.0f)),tPrev(0.0f),lightPos(5.0f,5.0f,5.0f,1.0f)
 {
     //Mesh objects declaration
-    mesh = ObjMesh::load("../Project_Template/media/spot.obj");
-    object = ObjMesh::load("../Project_Template/media/spot.obj");
-    object1 = ObjMesh::load("../Project_Template/media/Goblet.obj");
-    object2 = ObjMesh::load("../Project_Template/media/trophy.obj");
-    object3 = ObjMesh::load("../Project_Template/media/pig_triangulated.obj");
-    customOBJ = ObjMesh::load("../Project_Template/media/spot.obj");
+    mesh = ObjMesh::load("media/spot.obj");
+    object = ObjMesh::load("media/spot.obj");
+    object1 = ObjMesh::load("media/Goblet.obj");
+    object2 = ObjMesh::load("media/trophy.obj");
+    object3 = ObjMesh::load("media/pig_triangulated.obj");
+    customOBJ = ObjMesh::load("media/spot.obj");
 
     //Glfw window (Necessary for ImGUI functions)
     window = sceneRunnerWindow;
@@ -342,7 +342,7 @@ bool SceneBasic_Uniform::tryFileText()
 {
     //Checks if the file in the ImGUI box exists
     std::string temp(tryFileName);
-    std::string fileName = "../Project_Template/media/" + temp;
+    std::string fileName = "media/" + temp;
     FILE* file;
     errno_t err;
     err = fopen_s(&file, fileName.c_str(), "r");
@@ -358,7 +358,7 @@ bool SceneBasic_Uniform::tryFileText()
         err = fopen_s(&file, fileName.c_str(), "r");
         //If the file still cannot be found the "custom" mesh is set to the Spot model
         if(err == 0){ customOBJ = ObjMesh::load(fileName.c_str(), true); return true; }
-        customOBJ = ObjMesh::load("../Project_Template/media/spot.obj");
+        customOBJ = ObjMesh::load("media/spot.obj");
         return false;
     }
     
