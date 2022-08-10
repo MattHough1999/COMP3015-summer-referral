@@ -145,7 +145,6 @@ void SceneBasic_Uniform::renderUserInterface()
     //Light options
     ImGui::Begin("Lights Menu");
 
-    ImGui::Text("This is some more text");
     ImGui::SliderFloat("Rotation Speed", &lightRotationSpeed, 0.0f, 5.0f);
     ImGui::SliderFloat3("Intensity (Colour)", LightIntensity, 0, 100);
     ImGui::SliderFloat3("Position", LightPos, -10.00f, 10.00f);
