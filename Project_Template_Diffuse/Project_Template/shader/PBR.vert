@@ -32,7 +32,7 @@ void main()
 
 		Position = ModelViewMatrix * pos;
 		Normal = normalize((NormalMatrix * n) * VertexNormal);
-		gl_Position = MVP * pos; 
+		gl_Position = MVP * pos;
 	}
 	else
 	{
@@ -40,8 +40,9 @@ void main()
 
 		Position = (ModelViewMatrix * vec4(VertexPosition,1.0));
 
-		gl_Position = MVP * vec4(VertexPosition,1.0); 
+		gl_Position = MVP * vec4(VertexPosition,1.0);
 	}
 	
 	
 } 
+

@@ -87,6 +87,6 @@ Enabling both the Metallic and Animated uniforms can cause some quirks with the 
 
 ## Links
 ### YouTube Video
-[YouTube Link]
+https://youtu.be/YTKZOfDB0CU
 ### Git Repo
 https://github.com/MattHough1999/COMP3015-summer-referral/

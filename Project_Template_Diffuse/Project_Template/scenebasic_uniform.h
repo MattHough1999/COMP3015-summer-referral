@@ -21,7 +21,7 @@ private:
     Plane plane;
     std::unique_ptr<ObjMesh> mesh,object,object1,object2,object3,customOBJ;
     
-    Teapot teapot;
+    //Teapot teapot;
 
     float tPrev, lightAngle, lightRotationSpeed, angle,time;
     glm::vec4 lightPos;

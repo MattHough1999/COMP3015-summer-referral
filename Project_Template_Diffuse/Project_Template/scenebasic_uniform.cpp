@@ -16,7 +16,7 @@ using glm::mat4;
 
 GLFWwindow* window;
 
-SceneBasic_Uniform::SceneBasic_Uniform(GLFWwindow* sceneRunnerWindow) : time(0), plane(20,20,200,1) ,teapot(5, glm::mat4(1.0f)),tPrev(0.0f),lightPos(5.0f,5.0f,5.0f,1.0f)
+SceneBasic_Uniform::SceneBasic_Uniform(GLFWwindow* sceneRunnerWindow) : time(0), plane(20,20,200,1) ,tPrev(0.0f),lightPos(5.0f,5.0f,5.0f,1.0f)
 {
     //Mesh objects declaration
     mesh = ObjMesh::load("media/spot.obj");
